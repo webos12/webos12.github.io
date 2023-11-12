@@ -1,9 +1,12 @@
-Workflow to create a github repo with a static website  
-on a new chromebook
+Workflow to create a github repo  on a new chromebook
 
 Go to github.com
 Create github account: <USER>
-Create public repo: <USER>.github.io
+
+If you want your repo to be statically served at the address:
+https://<USER>.github.io, then create a public repo named
+<USER>.github.io. (Otherwise, name it anything you want.)
+This repo name is <REPO>.
 
 Search the chromebook (not in the browser) for "Linux"
 (it should be under Settings -> Developers) and install it.
@@ -23,20 +26,24 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 && sudo apt update \
 && sudo apt install gh -y
 
-
 Run these commands
 
 gh auth login
-
 git config --global user.email "whatever12345@gmail.com"
 git config --global user.name "Slermerish Yooblex Jankister"
-
-
 cd ~/yourproject
-
 git init
 git branch -m main
-git remote add origin https://github.com/<USER>/<USER>.github.io.git
+git remote add origin https://github.com/<USER>/<REPO>.git
+
+So a static site repo will look like
+
+git remote add origin https://github.com/myname/coolrepo.github.io.git
+
+Otherwise, it will just be:
+
+git remote add origin https://github.com/myname/coolrepo.git
+
 
 The following commands can be put into a script to automate the syncing of the
 remote repo with the local project. 
@@ -44,4 +51,5 @@ remote repo with the local project.
 cd ~/yourproject 
 git add . 
 git commit -m "Blark" 
-git push -u origin main 
+git push -u origin main
+ 
