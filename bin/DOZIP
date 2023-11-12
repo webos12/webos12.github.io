@@ -24,7 +24,7 @@ fi
 
 cd ~/
 
-zip -y -r $DATENUM lotw/ -x \*.sw[nop] -x \*/.git/\*
+zip -y -r $DATENUM lotw/ -x \*.sw[nop] -x \*/.git/\* -x \*/nano
 
 #zip -y -r $DATENUM lotw/ -x \*.sw[nop] -x \*/.git/\* -x lotw/www/examples/games -x lotw/www/examples/sounds
 
