@@ -1,0 +1,36 @@
+Workflow to create a github repo on a new chromebook
+
+Go to github.com
+Create github account: <USER>
+Create public repo: <USER>.github.io
+
+Search the chromebook (not in the browser) for "Linux"
+(it should be under Settings -> Developers) and install it.
+
+Open the terminal
+
+Search the web for gh-cli Linux (debian) installation instructions
+Install gh-cli by pasting in the relevant command line 
+
+
+Run these commands
+
+gh auth login
+
+git config --global user.email "whatever12345@gmail.com"
+git config --global user.name "Slermerish Yooblex Jankister"
+
+
+cd ~/yourproject
+
+git init
+git branch -m main
+git remote add origin https://github.com/<USER>/<USER>.github.io.git
+
+The following commands can be put into a script to automate the syncing of the
+remote repo with the local project. 
+
+cd ~/yourproject 
+git add . 
+git commit -m "Blark" 
+git push -u origin main 
