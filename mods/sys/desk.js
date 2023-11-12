@@ -1,3 +1,8 @@
+/*
+
+Can't move a folder icon with cursor select and 'm' after creating it on the desktop!!!
+
+*/
 
 /*«Late October 2023: Adding 9 workspaces
 
@@ -2067,7 +2072,7 @@ Object.defineProperty(this, "linkfullpath", {//«
 		return this.node.fullpath;
 	}
 });//»
-Object.defineProperty(this,"path",{get:function(){return this.node.path;}});
+Object.defineProperty(this,"path",{get:function(){return this.parWin.fullpath;}});
 Object.defineProperty(this, "fullname", {get: function() {return this.node.name;}});
 
 {
