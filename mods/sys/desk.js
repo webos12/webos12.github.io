@@ -2072,7 +2072,7 @@ Object.defineProperty(this, "linkfullpath", {//«
 		return this.node.fullpath;
 	}
 });//»
-Object.defineProperty(this,"path",{get:function(){return this.parWin.fullpath;}});
+Object.defineProperty(this,"path",{get:function(){return this.node.path;}});
 Object.defineProperty(this, "fullname", {get: function() {return this.node.name;}});
 
 {
@@ -2971,10 +2971,12 @@ const save_icon_editing = async() => {//«
 	};//»
 
 	const doend = async newname => {//«
-		let oldpath = `${CEDICN.path}/${holdname}`;
+		let parpath = CEDICN.parWin.fullpath;
+		let oldpath = `${parpath}/${holdname}`;
 		let oldname;
 		let oldext;
 		let newnameext;
+		let newpath;
 		if (CEDICN.appName !== FOLDER_APP) {
 			let nameext = getNameExt(holdname);
  			oldname = nameext[0];
@@ -2987,18 +2989,19 @@ const save_icon_editing = async() => {//«
 		if (newname){
 			newnameext = newname;
 			if (oldext) newnameext=`${newname}.${oldext}`;
-			update_all_paths(oldpath, `${CEDICN.path}/${newnameext}`);
+			newpath = `${parpath}/${newnameext}`;
+			update_all_paths(oldpath, newpath);
 			CEDICN.set_window_name(newname);
 			CEDICN.rename(newnameext);
 		}
 		else {
 			CEDICN.label.innerText = oldname;
 		}
-
 		CEDICN.dblclick = null;
 		if (CEDICN._savetext||CEDICN._savetext==="") {
-			let rv = await fsapi.writeFile(CEDICN.fullpath, CEDICN._savetext, {noMakeIcon: true });
+			let rv = await fsapi.writeFile(newpath, CEDICN._savetext, {noMakeIcon: true });
 			if (!rv) return abort("The file could not be created");
+			CEDICN.node = rv;
 			delete CEDICN._savetext;
 		}
 
@@ -3041,10 +3044,10 @@ const save_icon_editing = async() => {//«
 		return;
 	}
 	if (ifnew){//«
-		let parobj = await pathToNode(CEDICN.path);
+		let parobj = await pathToNode(CEDICN.parWin.fullpath);
 		if (!parobj) {
 			doend();
-cerr("pathToNode(): parpath not found:" + CEDICN.path);
+cerr("pathToNode(): parpath not found:" + CEDICN.parWin.fullpath);
 			return;
 		}
 		let rtype = parobj.type;
@@ -3057,7 +3060,10 @@ cerr("Unsupported type:" + rtype);
 			return doend(checkithold);
 		}
 		let mkret = await fsapi.mkDir(parobj, checkit, {noMakeIcon: true});
-		if (mkret) doend(checkit);
+		if (mkret) {
+			CEDICN.node = mkret;
+			doend(checkit);
+		}
 		else abort("Could not create the new directory");
 		return;
 	}//»
@@ -8383,7 +8389,7 @@ const get_desk_context=()=>{//«
 	}
 	let apps_arr = globals.APPLICATIONS_MENU;
 	let apps_menu = [];
-	menu.unshift('Applications', apps_menu);
+	menu.push('Applications', apps_menu);
 	for (let i=0; i < apps_arr.length; i+=2){
 		apps_menu.push(apps_arr[i]);
 		let app = apps_arr[i+1];

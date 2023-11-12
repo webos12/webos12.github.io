@@ -408,7 +408,7 @@ this.get_context=()=>{//«
 	if (Win.saver) choices.push(null);
 	else choices.push(()=>{Desk.make_new_icon(Win, "Text")});
 	let arr = [
-		"\u{1f381}\xa0New",
+		"New",
 		choices
 	];  
 	if (this.show_hidden){
