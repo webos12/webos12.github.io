@@ -65,3 +65,21 @@ Once installed, get node like this:
 
 nvm install node
 
+
+For .bashrc: 
+
+# No help menu at bottom, toggle with Alt+x
+alias nano='nano -x -U -T 4'
+alias c='clear'
+
+# A simple prompt
+PS1='\w$ '
+
+PATH=$PATH:~/yourproject/bin
+
+# To install node packages, use
+# npm install $@ --prefix ~/.node
+
+export NODE_PATH=~/.node/node_modules
+
+
