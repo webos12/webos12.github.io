@@ -44,13 +44,18 @@ nmap <C-a> 0i
 nmap <C-e> $a
 nmap f :echo expand('%:p')<enter>
 
+" From https://github.com/flazz/vim-colorschemes:
+" mkdir ~/.vim
+" git clone https://github.com/flazz/vim-colorschemes.git ~/.vim
+colorscheme desert
+hi Comment ctermfg=red
+hi Folded ctermfg=blue ctermbg=NONE
 
+" npm install js-beautify
 vmap <C-p> :w! /dev/shm/JSBEAUTIFYIN<enter>:!DOBEAUTIFY /dev/shm/JSBEAUTIFYIN /dev/shm/JSBEAUTIFYOUT<enter>:r /dev/shm/JSBEAUTIFYOUT<enter>kdd
 
 "vmap <C-l> J:s/ \?\([-:{};=+><(),]\) \?/\1/g<enter>
 "vmap <S-l> :s/ \?\([-:{};=+><(),]\) \?/\1/g<enter>
 "vmap <C-m> :s/\/\/\({{{\\|}}}\)//<enter>
 "vmap <C-f> :s/function \([a-zA-Z][a-zA-Z0-9_]*\)\(([a-zA-Z0-9_, ]*)\) *{/const \1=\2=>{/<enter>
-"nmap <C-w> :set wrap<enter>
-"nmap <S-w> :set nowrap<enter>
 
