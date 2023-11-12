@@ -1,4 +1,5 @@
-Workflow to create a github repo on a new chromebook
+Workflow to create a github repo with a static website  
+on a new chromebook
 
 Go to github.com
 Create github account: <USER>
@@ -9,7 +10,8 @@ Search the chromebook (not in the browser) for "Linux"
 
 Open the terminal
 
-Search the web for gh-cli Linux (debian) installation instructions.
+Search the web for "gh-cli Linux installation". The webpage may be something
+like: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 
 Install the 'gh' command by pasting in the relevant command line, which may 
 more or less look like the following:
@@ -20,7 +22,6 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
 && sudo apt update \
 && sudo apt install gh -y
-
 
 
 Run these commands
