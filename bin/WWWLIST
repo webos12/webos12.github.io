@@ -1,6 +1,0 @@
-cd ~/lotw/www
-rm list.json
-DIRGET ./ > /dev/shm/LOTWWWWLISTOUT
-mv /dev/shm/LOTWWWWLISTOUT list.json
-
-
