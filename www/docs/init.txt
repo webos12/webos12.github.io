@@ -52,4 +52,16 @@ cd ~/yourproject
 git add . 
 git commit -m "Blark" 
 git push -u origin main
- 
+
+
+You may also want Node.js for development purposes (it is necessary for
+certain commands in ~/yourproject/bin/ to work). Search for nvm (node version
+manager), which may me located at https://github.com/nvm-sh/nvm. Use the 
+install command, which may look more or less like:
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash 
+
+Once installed, get node like this:
+
+nvm install node
+
