@@ -1,93 +1,7 @@
-/*
 
-Can't move a folder icon with cursor select and 'm' after creating it on the desktop!!!
-
-*/
-
-/*«Late October 2023: Adding 9 workspaces
-
-Added makeScrollable method onto Window's This sets the tabIndex property of
-the main div to "-1", and adds the isScrollable property to the Window. 
-
-Toggle between workspaces with Ctrl+Alt+Shift+[1-9]
-If an icon is being opened (double-clicked) that already has an associated window in another
-workspace, then we will either need to:
-1) move the window to the current workspace (this is what we are doing)
-2) unlink the relationship with the associated window and open a new window
-3) switch to the other workspace
-
-Need to make sure that all of the windows in all of the workspaces are updated for the various
-updating operations
-
-»*/
 /*«
-
 NEED TO BE ON THE LOOK OUT FOR EVERY CSS VALUE THAT NEEDS TO BE IN
 "px" RATHER THAN BEING A NUMBER!!!!
-
-As long as everything is set via the underscore method, this should not be a
-problem. Whoever independently sets elem.style.width=10 (as well as
-right/bottom) is going to have a problem now!
-
-This is really only considered quirks mode because we set css values that
-expect the string "100px" with just the number, 100. So the browser has to
-assume that we mean pixels.
-
-It looks like all icn.iconElem._del should just be icn.del()!!!
-
-Got rid of all CDA (cur drag app) use cases, which just comes from a dumb
-experimental app (dev.Launcher), which is idiotically trying to be a MacOS
-Dockbar clone. Beyond the mere brainteaser of trying to get a smooth
-magnification effect, I don't see much point of literally supporting a 
-MacOS-like Dockbar.
-
-@REOPIKLU: Real bad (in this day and age) to have this as ._del() rather than
-the icon's method of .del()!!!  Do we need to do a finegrained check of all
-"._del()" invocations? 
-
-@EIUKLMY: October 12-ish, 2023: Just added Math.round here. Apparently placeInIconSlot, 
-doesn't work well with numbers like 239.99999567...
-
-»*/
-/*«
-
-Two folders on the desktop: har and zlar.
-I opened up har, and minimized it.
-I moved the har icon into zlar.
-I then moved the icon from zlar back onto the desktop.
-Upon double-clicking har, I expected it to be unminified, but instead another folder named har
-was openened...
-
-This was fixed @TEIOPLKJHY (by removing the .icon property of the icon's associated window, at
-it's own .win property), but this introduces the problem in the cases where the icons
-are "returned" as NO_MOVE_ICONS because they are being edited or just don't have the permission
-to move.
-
-This was fixed @EMKIOFDPM (by checking for the existence of the .win property on each icon of 
-NO_MOVE_ICONS, and then setting the .icon property of the .win property to the given icon).
-
-»*/
-/*«Test for tiling mode
-(async()=>{
-
-let subw=2;
-let subh=38;
-let vals=[
-	[238,295,17,50,"None"],
-	[775,144, 425, 15],
-	[218, 307, 879, 206,"None"],
-	[718, 145, 93, 382],
-//	[368, 156, 889, 525],
-//	[518, 206, 15, 475]
-];
-if (windows.tiling_mode) return;
-if (windows.layout_mode) toggle_layout_mode();
-for (let v of vals){
-open_app(v[4]||TERMINAL_APP, {force: true, winArgs: {X:v[2],Y:v[3],WID:v[0]-subw,HGT:v[1]-subh}});
-}
-toggle_layout_mode();
-toggle_tiling_mode();
-})();
 »*/
 
 //Imports«
@@ -135,6 +49,7 @@ const{
 const{KC,center,isnum,isobj,isarr,isint,isstr,mkdv,mksp,mkbut,make, log, cwarn, cerr}=util;
 const {dist,getNameExt,getKeys}=capi;
 const NUM=Number.isFinite;
+
 //»
 
 //Desk«
@@ -2012,7 +1927,9 @@ icn.clear = (patharg, which) =>{//«
 	else path = icn.fullpath;
 	let k =`${FS_PREF}:${path}`;
 	if (!localStorage[k]) {
-cwarn(`Nothing found in localStorage[${k}]`);
+if (debug_localstorage) {
+log(`Nothing found in localStorage[${k}]`);
+}
 return 
 }
 if (debug_localstorage) {
@@ -2971,7 +2888,6 @@ const save_icon_editing = async() => {//«
 	};//»
 
 	const doend = async newname => {//«
-		let parpath = CEDICN.parWin.fullpath;
 		let oldpath = `${parpath}/${holdname}`;
 		let oldname;
 		let oldext;
@@ -3009,13 +2925,15 @@ const save_icon_editing = async() => {//«
 			CEDICN._editcb(CEDICN);
 			CEDICN._editcb = null;
 		}
-		if (CEDICN.parentNode===desk && !windows_showing) toggle_show_windows();
+		if (CEDICN.iconElem.parentNode===desk && !windows_showing) toggle_show_windows();
+		CEDICN.save();
 		CEDICN = null;
 		CG.off();
 	};//»
 
 	let ifnew;
 	if (!CEDICN) return;
+	let parpath = CEDICN.parWin.fullpath;
 	if (CEDICN.isnew) {
 		ifnew = true;
 		delete CEDICN.isnew;
@@ -3034,8 +2952,9 @@ const save_icon_editing = async() => {//«
 		return doend();
 	}
 	
-	let srcpath = CEDICN.path + "/" + holdname;
-	let destpath = CEDICN.path + "/" + checkit;
+	let srcpath = `${parpath}/${holdname}`;
+	let destpath = `${parpath}/${checkit}`;
+cwarn(`${srcpath} -> ${destpath}`);
 	if (!(!await check_name_exists(checkit, CEDICN.parWin) || (ifnew && (srcpath == destpath)))) {
 		popup(`The name "${checkit}" is already taken... reverting to "${holdname}"`);
 		CEDICN.area.value = val;
@@ -3044,10 +2963,10 @@ const save_icon_editing = async() => {//«
 		return;
 	}
 	if (ifnew){//«
-		let parobj = await pathToNode(CEDICN.parWin.fullpath);
+		let parobj = await pathToNode(parpath);
 		if (!parobj) {
 			doend();
-cerr("pathToNode(): parpath not found:" + CEDICN.parWin.fullpath);
+cerr("pathToNode(): parpath not found:" + parpath);
 			return;
 		}
 		let rtype = parobj.type;
@@ -3177,7 +3096,7 @@ const make_new_text_file = (winarg, val, ext, opts={})=>{//«
 			Y();
 			return;
 		}
-		let fobj = {name: `${name}.${ext}`, baseName: name, ext: ext};
+		let fobj = {name: `${name}.${ext}`, baseName: name, ext: ext, fake: true};
 		if (ext==="app") fobj.appicon = val;
 		let icn = new Icon(fobj);
 		icn._savetext = val;
@@ -3219,7 +3138,7 @@ const make_folder_icon = async(winarg) => {//«
 		return poperr(`Not making a directory of type: '${rtype}'`);
 	}
 	let obj;
-	let icn = new Icon({name: name, baseName: name, kids:true});
+	let icn = new Icon({name: name, baseName: name, kids:true, fake: true});
 	icn.isnew = true;
 	if (usewin===desk) placeInIconSlot(icn, {create: true});
 	else add_icon_to_folder_win(icn, usewin.top);
